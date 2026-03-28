@@ -61,7 +61,7 @@ async def on_message(message):
     await bot.process_commands(message)
 
 @bot.command(name='ping')
-@commands.has_role('Moderator')
+@commands.has_role('Administrator')
 async def ping(ctx):
     latency = round(bot.latency * 1000)
     await ctx.send(f'🏓 Pong! Bot latency is **{latency}ms**.')
@@ -69,7 +69,7 @@ async def ping(ctx):
 @ping.error
 async def ping_error(ctx, error):
     if isinstance(error, commands.MissingRole):
-        await ctx.send("❌ You need the **Moderator** role to use this command.")
+        await ctx.send("❌ You need the **Administrator** role to use this command.")
 
 @bot.event
 async def on_ready():
