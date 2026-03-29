@@ -1,6 +1,3 @@
-import subprocess
-subprocess.run(["pip", "install", "discord.py", "flask"])
-
 import discord
 from discord.ext import commands
 import os
@@ -47,8 +44,9 @@ async def on_message(message):
     if message.author.bot:
         return
 
-    # Match ?rule followed immediately by a number (no space allowed)
-    match = re.match(r'^\?rule(\d+)$', message.content.strip())
+    # Matches ?rule5 or ?rule5 some text after - no space between rule and number
+    # Also matches ?rule5 with anything after as long as there's a space
+    match = re.match(r'^\?rule(\d+)(\s+.*)?$', message.content.strip())
     if match:
         number = int(match.group(1))
         if number in rules:
@@ -61,15 +59,12 @@ async def on_message(message):
     await bot.process_commands(message)
 
 @bot.command(name='ping')
-@commands.has_role('Administrator')
 async def ping(ctx):
+    role = discord.utils.get(ctx.guild.roles, name='Administrator')
+    if role not in ctx.author.roles:
+        return
     latency = round(bot.latency * 1000)
     await ctx.send(f'🏓 Pong! Bot latency is **{latency}ms**.')
-
-@ping.error
-async def ping_error(ctx, error):
-    if isinstance(error, commands.MissingRole):
-        await ctx.send("❌ You need the **Administrator** role to use this command.")
 
 @bot.event
 async def on_ready():
